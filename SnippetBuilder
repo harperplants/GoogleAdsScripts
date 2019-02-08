@@ -1,0 +1,13 @@
+function main() {
+//get campaign
+var findCampaign = AdWordsApp.campaigns().get();
+
+  var snippetBuilder = AdWordsApp.extensions().newSnippetBuilder();
+
+ var snippetOperation = snippetBuilder
+      .withHeader('Styles')
+      .withValues(['New Construction', 'Ranch Homes','Two Story', 'Country Homes', 'Newer Subdivisions'])
+      .build();
+
+}
+
