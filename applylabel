@@ -1,0 +1,10 @@
+
+function main() {
+  var accts = MccApp.accounts().withIds([
+  "123-456-7890", "555-555-5555", "555-555-5555", "555-555-5555", "555-555-5555", "555-555-5555", "555-555-5555", "555-555-5555", "555-555-5555", 
+]).get();
+  while (accts.hasNext())
+  {
+    accts.next().applyLabel("Colorado");
+                                         }
+}
