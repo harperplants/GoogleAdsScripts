@@ -1,0 +1,26 @@
+  function main() {
+    var accountIterator = MccApp.accounts().withCondition("Clicks > 1 during THIS_MONTH").get();
+    var spreadsheet = SpreadsheetApp.openByUrl("PASTE_YOUR_SPREADSHEET_URL_HERE");
+    var mccAccount = AdWordsApp.currentAccount();
+    var sheet = spreadsheet.getActiveSheet();
+    sheet.appendRow(['Query', 'CostPerConversion','AccountDescriptiveName','CampaignName','AdGroupName', 'Conversions', 'Cost', 'Clicks']);
+    while (accountIterator.hasNext()) 
+    {
+    var account = accountIterator.next();
+    // Switch to the account you want to process.
+
+ MccApp.select(account);
+  
+    //Query
+    var report = AdWordsApp.report(
+      "SELECT Query, CostPerConversion, AccountDescriptiveName, CampaignName, AdGroupName, Conversions, Cost, Clicks " +
+      "FROM SEARCH_QUERY_PERFORMANCE_REPORT " +
+      "WHERE Clicks > 1 " +
+      "DURING LAST_7_DAYS");
+
+  var rows = report.rows();
+    while (rows.hasNext()) {
+        var row = rows.next();            
+        sheet.appendRow([row['Query'], row['CostPerConversion'], row['AccountDescriptiveName'], row['CampaignName'], row['AdGroupName'], row['Conversions'], row['Cost'], row['Clicks']]);
+    }
+}
