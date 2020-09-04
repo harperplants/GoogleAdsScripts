@@ -1,0 +1,49 @@
+//var APPEND = true;
+//Parts of this script were found at https://github.com/jberes1-zz/Scripts/blob/bf6336ec912e929e5f14bd5c44735c6751210b94/adwords_scripts/location_performance.js
+//To do before running: paste in your Google Sheet URL in line 7
+// You can remove .withLimit(25) from line 6 to include more accounts - added that because this script timed out after 30 minutes
+function main() {
+    var accountIterator = MccApp.accounts().withCondition("Clicks > 20 during THIS_MONTH").withLimit(25).get(); // selects active child accounts under this MCC account
+    var SPREADSHEET_URL = "PASTE IN YOUR GOOGLE SHEET URL HERE"
+    // var account = AdWordsApp.currentAccount(); // This line is not necessary as you are already using MccApp to select the current account
+    var spreadsheet = SpreadsheetApp.openByUrl(SPREADSHEET_URL)
+  //var Sheet = spreadsheet.getSheetByName('Geo_Data');
+    var sheet = spreadsheet.getActiveSheet(); 
+  // gets the default active sheet
+ sheet.clear();
+ sheet.appendRow(['Account','Campaign','Location Id', 'Clicks', 'Impressions', 'Cost', 'Conversions', 'Cost per Conv.', 'Conv. Rate']);
+  
+    while (accountIterator.hasNext()) {
+        var account = accountIterator.next();
+
+        MccApp.select(account); // selects the current account to generate report from
+
+        var report = AdWordsApp.report(
+            'SELECT AccountDescriptiveName, CampaignName, Id, Clicks, Impressions, Cost, Conversions, CostPerConversion, ConversionRate FROM CAMPAIGN_LOCATION_TARGET_REPORT ' +
+           // 'DURING LAST_30_DAYS ' + 
+            'WHERE IsNegative = FALSE and CampaignStatus = ENABLED ' +
+            'DURING LAST_30_DAYS ');
+            
+     
+        var rows = report.rows();
+        while (rows.hasNext()) {
+            var row = rows.next();
+
+            sheet.appendRow([row['AccountDescriptiveName'], 
+                             row['CampaignName'],
+                            row['Id'],
+                            row['Clicks'],  
+                             row['Impressions'], 
+                            row['Cost'],
+                            row['Conversions'],
+                            row['CostPerConversion'],
+                            // row ['ConversionRate'],
+                            //row['AdNetworkType1'], 
+                            //row['Labels'], 
+                            //row['Date'], 
+                            //row['Conversions'], 
+                            row['ConversionRate']]); 
+          // append rows from current account's generated Campaign Location Target Performance Report
+        }
+    }
+}
