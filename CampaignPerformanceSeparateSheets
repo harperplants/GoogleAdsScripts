@@ -1,0 +1,38 @@
+//Script Source: https://groups.google.com/g/adwords-scripts/c/XrIL3LWYerU/m/bDXfJM6OCAAJ
+//This Script, applied on MCC Level, will create one tab per account in the defined spreadsheet and insert the report. 
+//The report data will update when the script is triggered again.
+//Thanks to Katrin for sharing the finished script on the Google Ads script forum!
+
+var spreadsheet = SpreadsheetApp.openByUrl('Insert Spreadsheet URL here');
+
+function main() {
+  var accountSelector = AdsManagerApp.accounts()
+  .withCondition("Impressions > 0")
+  .forDateRange("20200101", "20201231")
+  .get();
+  
+  while(accountSelector.hasNext()) {
+    var account = accountSelector.next();
+    AdsManagerApp.select(account);
+    generateReports();
+  }
+
+}
+
+function generateReports() {
+  var accountId = AdsApp.currentAccount().getCustomerId();
+  var sheet;
+  if (!spreadsheet.getSheetByName(accountId)){
+    sheet = spreadsheet.insertSheet(accountId);
+  } else {
+    sheet = spreadsheet.getSheetByName(accountId); 
+  }    
+  
+  var report = AdsApp.report(
+    'SELECT AccountDescriptiveName, CampaignName, Conversions, Date, Impressions, Clicks, Cost, Labels ' +
+    'FROM CAMPAIGN_PERFORMANCE_REPORT ' +
+    ' WHERE Cost > 0 ' +
+    'DURING 20200101, 20201231 '
+    );
+       
+    report.exportToSheet(sheet);
