@@ -1,0 +1,66 @@
+function main() {
+// Exports radius targets across MCC, iterating through accounts with 1 or more clicks this month
+// Columns are Miles|Latitude|Longitude|Campaign ID|Campaign Name|Account|CID
+// Instructions: You will paste your Google Sheets URL into the line that begins with
+// var SPREADSHEET_URL = 'PASTE-YOUR-GOOGLE-SHEETS-URL-HERE';
+// replacing the placeholder PASTE-YOUR-GOOGLE-SHEETS-URL-HERE
+// Also, in the CamapignName .withCondition line, enter the campaign name category/naming convention
+// replacing the placeholder words enter-your-value-here
+  var accountSelector = AdsManagerApp
+     .accounts()
+   .withCondition("Clicks > 1")
+  .forDateRange("THIS_MONTH")
+     .orderBy("Clicks DESC")
+
+  var accountIterator = accountSelector.get();
+ while (accountIterator.hasNext()) {
+   var account = accountIterator.next();
+
+AdsManagerApp.select(account);
+//Now in the individual account rather than MCC account
+ 
+  var proximitySelector = AdsApp.targeting()
+    .targetedProximities()
+    .forDateRange("THIS_MONTH")
+    .orderBy("Clicks DESC");
+
+//in the CamapignName .withCondition line, enter the campaign name category/naming convention
+// if you don't want to filter for a certain word in the campaigns, add // to the beginning of that line to exclude it from running
+  var campaignIterator = AdsApp.campaigns()
+  .withCondition("Status = ENABLED")
+  .withCondition("Budget > 5.00")
+  .withCondition("CampaignName CONTAINS_IGNORE_CASE 'enter-your-value-here'")
+
+     .get();
+  if (campaignIterator.hasNext()) {
+   var campaign = campaignIterator.next();
+    var proximityIterator = campaign.targeting().targetedProximities().get();
+
+    while (proximityIterator.hasNext()) {
+      var targetedProximity = proximityIterator.next();
+      Logger.log(campaign.getName() + " | " + targetedProximity.getRadius() +
+            targetedProximity.getRadiusUnits() +
+            ' around (' +
+            targetedProximity.getLatitude() +
+            targetedProximity.getLongitude() + ')' + campaign.getId());
+   
+
+//append rows to a spreadsheet
+  var SPREADSHEET_URL = 'PASTE-YOUR-GOOGLE-SHEET-URL-HERE';
+  // Name of the specific sheet in the spreadsheet.
+  var SHEET_NAME = 'proximity';
+
+  var ss = SpreadsheetApp.openByUrl(SPREADSHEET_URL);
+  var sheet = ss.getSheetByName(SHEET_NAME);
+
+ sheet.appendRow([targetedProximity.getRadius(),targetedProximity.getLatitude(), targetedProximity.getLongitude(), campaign.getId(), campaign.getName(), account.getName(), account.getCustomerId()]);
+}
+
+    }
+ }
+}
+  
+
+  
+
+  
