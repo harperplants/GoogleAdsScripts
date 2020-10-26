@@ -24,8 +24,8 @@ AdsManagerApp.select(account);
     .forDateRange("THIS_MONTH")
     .orderBy("Clicks DESC");
 
-//in the CamapignName .withCondition line, enter the campaign name category/naming convention
-// if you don't want to filter for a certain word in the campaigns, add // to the beginning of that line to exclude it from running
+// In the CampaignName .withCondition line, enter the campaign name category/naming convention
+// If you don't want to filter for a certain word in the campaigns, add // to the beginning of that line to exclude it from running
   var campaignIterator = AdsApp.campaigns()
   .withCondition("Status = ENABLED")
   .withCondition("Budget > 5.00")
