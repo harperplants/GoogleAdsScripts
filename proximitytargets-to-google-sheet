@@ -4,7 +4,7 @@ function main() {
 // Instructions: You will paste your Google Sheets URL into the line that begins with
 // var SPREADSHEET_URL = 'PASTE-YOUR-GOOGLE-SHEETS-URL-HERE';
 // replacing the placeholder PASTE-YOUR-GOOGLE-SHEETS-URL-HERE
-// Also, in the CamapignName .withCondition line, enter the campaign name category/naming convention
+// Also, in the CampaignName .withCondition line, enter the campaign name category/naming convention
 // replacing the placeholder words enter-your-value-here
   var accountSelector = AdsManagerApp
      .accounts()
