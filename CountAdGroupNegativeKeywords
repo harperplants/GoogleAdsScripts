@@ -1,0 +1,41 @@
+  // This script runs through the MCC accounts that have had clicks this month and if an ad group has less than 5 negative keywords, the ad group, campaign name 
+  // and number of negative keywords in the ad group is logged
+  function main() {
+    var accountSelector = AdsManagerApp
+        .accounts()
+        .withCondition("Clicks > 0")
+        .forDateRange("THIS_MONTH")
+            .orderBy("Clicks DESC")
+    var accountIterator = accountSelector.get();
+    while (accountIterator.hasNext()) {
+        var account = accountIterator.next();
+   
+     AdsManagerApp.select(account);
+  
+    
+  Logger.log("account %s", account.getCustomerId(), account.getName());
+        //Now in the individual account rather than MCC account
+        
+      var adGroupIterator = AdWordsApp.adGroups()
+      .withCondition("Status = ENABLED")
+      .withCondition("Name DOES_NOT_CONTAIN_IGNORE_CASE 'Remarketing'")
+      .get();
+           while (adGroupIterator.hasNext()) {
+   var adGroup = adGroupIterator.next();
+
+       var negativeKeywordSelector = adGroup.negativeKeywords();
+
+ var negativeKeywordIterator = negativeKeywordSelector.get();
+ while (negativeKeywordIterator.hasNext()) {
+   var negativeKeyword = negativeKeywordIterator.next();
+
+            var total_neg = negativeKeywordIterator.totalNumEntities();
+ }
+           // Logger.log(adGroup + " | " + adGroup.getCampaign() + " | " + total_neg)
+             
+             if (total_neg < 5)
+               Logger.log(adGroup + " | " + adGroup.getCampaign() + " | " + total_neg)
+           }
+ }
+  }
+ 
