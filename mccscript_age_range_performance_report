@@ -1,0 +1,30 @@
+function main() {
+    var accountIterator = MccApp.accounts()
+     .withCondition("Clicks > 0")
+    .withCondition('AdNetworkType1 = "SEARCH"')
+    .forDateRange("THIS_MONTH")
+    .orderBy("Clicks ASC").get();
+    var spreadsheet = SpreadsheetApp.openById("INSERT_YOUR_SHEETID_HERE");
+    var mccAccount = AdWordsApp.currentAccount();
+    var sheet = spreadsheet.getActiveSheet();
+    sheet.appendRow(['CampaignName', 'AdGroupName', 'AccountDescriptiveName', 'BidModifier']);
+    while (accountIterator.hasNext()) {
+        var account = accountIterator.next();
+        // Switch to the account you want to process.
+      var account_name = account.getName();
+      var account_name = account.getName() ? account.getName() : '--';
+    Logger.log(account_name);
+   MccApp.select(account);
+       var query = AdWordsApp.report("SELECT CampaignName, AdGroupName, AccountDescriptiveName, BidModifier FROM AGE_RANGE_PERFORMANCE_REPORT " +
+                   "WHERE Clicks > 0 " +
+                  "DURING LAST_7_DAYS");
+      
+      var result = query.rows();
+while (result.hasNext()) {
+var row = result.next();
+Logger.log(row);
+   sheet.appendRow([row['CampaignName'], row['AdGroupName'], row['AccountDescriptiveName'], row['BidModifier']]);
+      
+    }
+}
+}
